@@ -10,7 +10,7 @@ import "./interfaces/IGmxIou.sol";
 contract GmxIou is IERC20, IGmxIou {
     using SafeMath for uint256;
 
-    mapping (address => uint256) private _balances;
+    mapping(address => uint256) private _balances;
     uint256 public override totalSupply;
 
     string public name;
@@ -19,14 +19,21 @@ contract GmxIou is IERC20, IGmxIou {
 
     address public minter;
 
-    constructor (address _minter, string memory _name, string memory _symbol) public {
+    constructor(
+        address _minter,
+        string memory _name,
+        string memory _symbol
+    ) public {
         name = _name;
         symbol = _symbol;
         minter = _minter;
         decimals = 18;
     }
 
-    function mint(address account, uint256 amount) public override returns (bool) {
+    function mint(
+        address account,
+        uint256 amount
+    ) public override returns (bool) {
         require(msg.sender == minter, "GmxIou: forbidden");
         _mint(account, amount);
         return true;
@@ -37,22 +44,35 @@ contract GmxIou is IERC20, IGmxIou {
     }
 
     // empty implementation, GmxIou tokens are non-transferrable
-    function transfer(address /* recipient */, uint256 /* amount */) public override returns (bool) {
+    function transfer(
+        address /* recipient */,
+        uint256 /* amount */
+    ) public override returns (bool) {
         revert("GmxIou: non-transferrable");
     }
 
     // empty implementation, GmxIou tokens are non-transferrable
-    function allowance(address /* owner */, address /* spender */) public view virtual override returns (uint256) {
+    function allowance(
+        address /* owner */,
+        address /* spender */
+    ) public view virtual override returns (uint256) {
         return 0;
     }
 
     // empty implementation, GmxIou tokens are non-transferrable
-    function approve(address /* spender */, uint256 /* amount */) public virtual override returns (bool) {
+    function approve(
+        address /* spender */,
+        uint256 /* amount */
+    ) public virtual override returns (bool) {
         revert("GmxIou: non-transferrable");
     }
 
     // empty implementation, GmxIou tokens are non-transferrable
-    function transferFrom(address /* sender */, address /* recipient */, uint256 /* amount */) public virtual override returns (bool) {
+    function transferFrom(
+        address /* sender */,
+        address /* recipient */,
+        uint256 /* amount */
+    ) public virtual override returns (bool) {
         revert("GmxIou: non-transferrable");
     }
 

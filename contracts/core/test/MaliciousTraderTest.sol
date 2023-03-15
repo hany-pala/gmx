@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 
 import "hardhat/console.sol";
@@ -34,10 +33,26 @@ contract MaliciousTraderTest {
         bytes32 _referralCode,
         address _callbackTarget
     ) external payable {
-        console.log("path.length %s indexToken %s minOut %s", _path.length, _indexToken, _minOut);
-        console.log("sizeDelta %s isLong %s acceptablePrice %s", _sizeDelta, _isLong, _acceptablePrice);
-        console.log("executionFee %s callbackTarget %s", _executionFee, _callbackTarget);
-        (bool success, bytes memory reason) = positionRouter.call{value: msg.value}(
+        console.log(
+            "path.length %s indexToken %s minOut %s",
+            _path.length,
+            _indexToken,
+            _minOut
+        );
+        console.log(
+            "sizeDelta %s isLong %s acceptablePrice %s",
+            _sizeDelta,
+            _isLong,
+            _acceptablePrice
+        );
+        console.log(
+            "executionFee %s callbackTarget %s",
+            _executionFee,
+            _callbackTarget
+        );
+        (bool success, bytes memory reason) = positionRouter.call{
+            value: msg.value
+        }(
             abi.encodeWithSignature(
                 "createIncreasePositionETH(address[],address,uint256,uint256,bool,uint256,uint256,bytes32,address)",
                 _path,

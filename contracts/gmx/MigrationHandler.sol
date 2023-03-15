@@ -29,7 +29,7 @@ contract MigrationHandler is ReentrancyGuard {
     address public bnb;
     address public busd;
 
-    mapping (address => mapping (address => uint256)) public refundedAmounts;
+    mapping(address => mapping(address => uint256)) public refundedAmounts;
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "MigrationHandler: forbidden");
@@ -71,7 +71,10 @@ contract MigrationHandler is ReentrancyGuard {
         uint256 _usdgAmount
     ) external onlyAdmin nonReentrant {
         IERC20(usdg).transferFrom(_migrator, vault, _usdgAmount);
-        uint256 amount = IVault(vault).sellUSDG(_redemptionToken, address(this));
+        uint256 amount = IVault(vault).sellUSDG(
+            _redemptionToken,
+            address(this)
+        );
 
         address[] memory path = new address[](2);
         path[0] = bnb;
@@ -152,7 +155,10 @@ contract MigrationHandler is ReentrancyGuard {
         uint256 refunded = refundedAmounts[_account][iouToken];
         refundedAmounts[_account][iouToken] = refunded.add(iouTokenAmount);
 
-        require(refundedAmounts[_account][iouToken] <= iouBalance, "MigrationHandler: refundable amount exceeded");
+        require(
+            refundedAmounts[_account][iouToken] <= iouBalance,
+            "MigrationHandler: refundable amount exceeded"
+        );
 
         IERC20(usdg).transferFrom(_migrator, _account, _usdgAmount);
     }

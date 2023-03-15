@@ -45,15 +45,45 @@ contract StakedGlpMigrator is Governable {
         _transfer(sender, _recipient, _amount);
     }
 
-    function _transfer(address _sender, address _recipient, uint256 _amount) private {
+    function _transfer(
+        address _sender,
+        address _recipient,
+        uint256 _amount
+    ) private {
         require(isEnabled, "StakedGlpMigrator: not enabled");
-        require(_sender != address(0), "StakedGlpMigrator: transfer from the zero address");
-        require(_recipient != address(0), "StakedGlpMigrator: transfer to the zero address");
+        require(
+            _sender != address(0),
+            "StakedGlpMigrator: transfer from the zero address"
+        );
+        require(
+            _recipient != address(0),
+            "StakedGlpMigrator: transfer to the zero address"
+        );
 
-        IRewardTracker(stakedGlpTracker).unstakeForAccount(_sender, feeGlpTracker, _amount, _sender);
-        IRewardTracker(feeGlpTracker).unstakeForAccount(_sender, glp, _amount, _sender);
+        IRewardTracker(stakedGlpTracker).unstakeForAccount(
+            _sender,
+            feeGlpTracker,
+            _amount,
+            _sender
+        );
+        IRewardTracker(feeGlpTracker).unstakeForAccount(
+            _sender,
+            glp,
+            _amount,
+            _sender
+        );
 
-        IRewardTracker(feeGlpTracker).stakeForAccount(_sender, _recipient, glp, _amount);
-        IRewardTracker(stakedGlpTracker).stakeForAccount(_recipient, _recipient, feeGlpTracker, _amount);
+        IRewardTracker(feeGlpTracker).stakeForAccount(
+            _sender,
+            _recipient,
+            glp,
+            _amount
+        );
+        IRewardTracker(stakedGlpTracker).stakeForAccount(
+            _recipient,
+            _recipient,
+            feeGlpTracker,
+            _amount
+        );
     }
 }

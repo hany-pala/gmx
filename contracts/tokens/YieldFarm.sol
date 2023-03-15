@@ -13,12 +13,20 @@ contract YieldFarm is YieldToken, ReentrancyGuard {
 
     address public stakingToken;
 
-    constructor(string memory _name, string memory _symbol, address _stakingToken) public YieldToken(_name, _symbol, 0) {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        address _stakingToken
+    ) public YieldToken(_name, _symbol, 0) {
         stakingToken = _stakingToken;
     }
 
     function stake(uint256 _amount) external nonReentrant {
-        IERC20(stakingToken).safeTransferFrom(msg.sender, address(this), _amount);
+        IERC20(stakingToken).safeTransferFrom(
+            msg.sender,
+            address(this),
+            _amount
+        );
         _mint(msg.sender, _amount);
     }
 

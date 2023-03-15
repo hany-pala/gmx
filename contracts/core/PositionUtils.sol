@@ -14,7 +14,11 @@ library PositionUtils {
 
     uint256 public constant BASIS_POINTS_DIVISOR = 10000;
 
-    event LeverageDecreased(uint256 collateralDelta, uint256 prevLeverage, uint256 nextLeverage);
+    event LeverageDecreased(
+        uint256 collateralDelta,
+        uint256 prevLeverage,
+        uint256 nextLeverage
+    );
 
     function shouldDeductFee(
         address _vault,
@@ -27,26 +31,42 @@ library PositionUtils {
         uint256 _increasePositionBufferBps
     ) external returns (bool) {
         // if the position is a short, do not charge a fee
-        if (!_isLong) { return false; }
+        if (!_isLong) {
+            return false;
+        }
 
         // if the position size is not increasing, this is a collateral deposit
-        if (_sizeDelta == 0) { return true; }
+        if (_sizeDelta == 0) {
+            return true;
+        }
 
         address collateralToken = _path[_path.length - 1];
 
         IVault vault = IVault(_vault);
-        (uint256 size, uint256 collateral, , , , , , ) = vault.getPosition(_account, collateralToken, _indexToken, _isLong);
+        (uint256 size, uint256 collateral, , , , , , ) = vault.getPosition(
+            _account,
+            collateralToken,
+            _indexToken,
+            _isLong
+        );
 
         // if there is no existing position, do not charge a fee
-        if (size == 0) { return false; }
+        if (size == 0) {
+            return false;
+        }
 
         uint256 nextSize = size.add(_sizeDelta);
-        uint256 collateralDelta = vault.tokenToUsdMin(collateralToken, _amountIn);
+        uint256 collateralDelta = vault.tokenToUsdMin(
+            collateralToken,
+            _amountIn
+        );
         uint256 nextCollateral = collateral.add(collateralDelta);
 
         uint256 prevLeverage = size.mul(BASIS_POINTS_DIVISOR).div(collateral);
         // allow for a maximum of a increasePositionBufferBps decrease since there might be some swap fees taken from the collateral
-        uint256 nextLeverage = nextSize.mul(BASIS_POINTS_DIVISOR + _increasePositionBufferBps).div(nextCollateral);
+        uint256 nextLeverage = nextSize
+            .mul(BASIS_POINTS_DIVISOR + _increasePositionBufferBps)
+            .div(nextCollateral);
 
         emit LeverageDecreased(collateralDelta, prevLeverage, nextLeverage);
 
@@ -65,7 +85,9 @@ library PositionUtils {
         bool _isLong,
         uint256 _price
     ) external {
-        uint256 markPrice = _isLong ? IVault(_vault).getMaxPrice(_indexToken) : IVault(_vault).getMinPrice(_indexToken);
+        uint256 markPrice = _isLong
+            ? IVault(_vault).getMaxPrice(_indexToken)
+            : IVault(_vault).getMinPrice(_indexToken);
         if (_isLong) {
             require(markPrice <= _price, "markPrice > price");
         } else {
@@ -75,10 +97,24 @@ library PositionUtils {
         address timelock = IVault(_vault).gov();
 
         // should be called strictly before position is updated in Vault
-        IShortsTracker(_shortsTracker).updateGlobalShortData(_account, _collateralToken, _indexToken, _isLong, _sizeDelta, markPrice, true);
+        IShortsTracker(_shortsTracker).updateGlobalShortData(
+            _account,
+            _collateralToken,
+            _indexToken,
+            _isLong,
+            _sizeDelta,
+            markPrice,
+            true
+        );
 
         ITimelock(timelock).enableLeverage(_vault);
-        IRouter(_router).pluginIncreasePosition(_account, _collateralToken, _indexToken, _sizeDelta, _isLong);
+        IRouter(_router).pluginIncreasePosition(
+            _account,
+            _collateralToken,
+            _indexToken,
+            _sizeDelta,
+            _isLong
+        );
         ITimelock(timelock).disableLeverage(_vault);
     }
 }
